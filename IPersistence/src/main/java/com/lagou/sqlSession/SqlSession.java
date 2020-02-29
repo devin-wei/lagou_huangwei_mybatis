@@ -8,5 +8,9 @@ public interface SqlSession {
 
     <T> T selectOne(String statementId, Object... params) throws Exception;
 
+    int update(String statementId, Object... params) throws Exception;
+
+    int delete(String statementId, Object... params) throws Exception;
+
     void close() throws SQLException;
 }

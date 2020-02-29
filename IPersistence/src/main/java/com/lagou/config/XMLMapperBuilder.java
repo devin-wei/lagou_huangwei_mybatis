@@ -9,6 +9,7 @@ import org.dom4j.io.SAXReader;
 
 import javax.xml.parsers.SAXParser;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 
 public class XMLMapperBuilder {
@@ -25,6 +26,11 @@ public class XMLMapperBuilder {
         Element rootElement = document.getRootElement();
         String namespace = rootElement.attributeValue("namespace");
         List<Element> list = rootElement.selectNodes("select");
+        List<Element> updateList = rootElement.selectNodes("update");
+        List<Element> deleteList = rootElement.selectNodes("delete");
+        list.addAll(updateList);
+        list.addAll(deleteList);
+
         for (Element element : list) {
             String id = element.attributeValue("id");
             String parameterType = element.attributeValue("parameterType");

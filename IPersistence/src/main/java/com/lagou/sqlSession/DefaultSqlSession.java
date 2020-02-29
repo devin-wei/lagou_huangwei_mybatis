@@ -36,6 +36,24 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     @Override
+    public int update(String statementId, Object... params) throws Exception {
+
+        return execute(statementId, params);
+    }
+
+    private int execute(String statementId, Object[] params) throws Exception {
+        SimpleExecutor simpleExecutor = new SimpleExecutor();
+        MappedStatement mappedStatement = configuration.getMappedStatementMap().get(statementId);
+        return simpleExecutor.execute(configuration, mappedStatement, params);
+    }
+
+    @Override
+    public int delete(String statementId, Object... params) throws Exception {
+
+        return execute(statementId, params);
+    }
+
+    @Override
     public void close() throws SQLException {
 
     }

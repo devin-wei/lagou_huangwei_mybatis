@@ -7,10 +7,8 @@ import com.lagou.utils.GenericTokenParser;
 import com.lagou.utils.ParameterMapping;
 import com.lagou.utils.ParameterMappingTokenHandler;
 
-import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
@@ -21,30 +19,9 @@ public class SimpleExecutor implements Executor{
 
     @Override
     public <E> List<E> query(Configuration configuration, MappedStatement mappedStatement, Object... params) throws Exception {
-        Connection connection = configuration.getDataSource().getConnection();
-        String sql = mappedStatement.getSql();
-        BoundSql boundSql = getBoundSql(sql);
-
-        PreparedStatement preparedStatement = connection.prepareStatement(boundSql.getSqlText());
-
-        List<ParameterMapping> parameterMappingList = boundSql.getParameterMappingList();
-
-        String parameterType = mappedStatement.getParameterType();
-        Class<?> parameterTypeClass = getClassType(parameterType);
-        //设置参数
-        for (int i = 0; i < parameterMappingList.size(); i++) {
-            ParameterMapping parameterMapping = parameterMappingList.get(i);
-            String content = parameterMapping.getContent();
-
-            //反射
-            Field declaredField = parameterTypeClass.getDeclaredField(content);
-            declaredField.setAccessible(true);
-            Object o = declaredField.get(params[0]);
-            preparedStatement.setObject(i+1, o);
-
-        }
         //执行sql
-        ResultSet resultSet = preparedStatement.executeQuery();
+        PreparedStatement prepareStatement = getPrepareStatement(configuration, mappedStatement, params[0]);
+        ResultSet resultSet = prepareStatement.executeQuery();
         String resultType = mappedStatement.getResultType();
         Class<?> resultTypeClass = getClassType(resultType);
         ArrayList<Object> objects = new ArrayList<>();
@@ -66,6 +43,38 @@ public class SimpleExecutor implements Executor{
         }
 
         return (List<E>) objects;
+    }
+
+    private PreparedStatement getPrepareStatement(Configuration configuration, MappedStatement mappedStatement, Object param) throws SQLException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+        Connection connection = configuration.getDataSource().getConnection();
+        String sql = mappedStatement.getSql();
+        BoundSql boundSql = getBoundSql(sql);
+
+        PreparedStatement preparedStatement = connection.prepareStatement(boundSql.getSqlText());
+
+        List<ParameterMapping> parameterMappingList = boundSql.getParameterMappingList();
+
+        String parameterType = mappedStatement.getParameterType();
+        Class<?> parameterTypeClass = getClassType(parameterType);
+        //设置参数
+        for (int i = 0; i < parameterMappingList.size(); i++) {
+            ParameterMapping parameterMapping = parameterMappingList.get(i);
+            String content = parameterMapping.getContent();
+
+            //反射
+            Field declaredField = parameterTypeClass.getDeclaredField(content);
+            declaredField.setAccessible(true);
+            Object o = declaredField.get(param);
+            preparedStatement.setObject(i + 1, o);
+        }
+        return preparedStatement;
+    }
+
+    @Override
+    public int execute(Configuration configuration, MappedStatement mappedStatement, Object[] params) throws Exception {
+        PreparedStatement prepareStatement = getPrepareStatement(configuration, mappedStatement, params[0]);
+        int execute = prepareStatement.executeUpdate();
+        return execute;
     }
 
     private Class<?> getClassType(String parameterType) throws ClassNotFoundException {
