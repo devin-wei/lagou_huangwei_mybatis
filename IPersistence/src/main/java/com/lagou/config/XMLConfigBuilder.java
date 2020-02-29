@@ -8,6 +8,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -36,11 +37,12 @@ public class XMLConfigBuilder {
             properties.setProperty(name, value);
         }
 
+
         ComboPooledDataSource comboPooledDataSource = new ComboPooledDataSource();
         comboPooledDataSource.setDriverClass(properties.getProperty("driverClass"));
-        comboPooledDataSource.setJdbcUrl("jdbcUrl");
-        comboPooledDataSource.setUser("username");
-        comboPooledDataSource.setPassword("password");
+        comboPooledDataSource.setJdbcUrl(properties.getProperty("jdbcUrl"));
+        comboPooledDataSource.setUser(properties.getProperty("username"));
+        comboPooledDataSource.setPassword(properties.getProperty("password"));
 
 
         configuration.setDataSource(comboPooledDataSource);

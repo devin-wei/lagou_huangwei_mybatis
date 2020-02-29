@@ -16,7 +16,6 @@ public class IPersistenceTest {
 
     @Test
     public void test() throws Exception {
-//        URL path = this.getClass().getClassLoader().getResource("sqlMapConfig.xml");
 
         InputStream resourceAsStream = Resources.getResourceAsStream("sqlMapConfig.xml");
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(resourceAsStream);

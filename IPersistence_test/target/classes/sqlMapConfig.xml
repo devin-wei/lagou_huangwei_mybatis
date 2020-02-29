@@ -1,23 +1,11 @@
 <configuration>
 
     <dataSource>
-        <property name="driver" value="com.mysql.jdbc.Driver"></property>
-        <property name="url" value="jdbc:mysql:///zdy_mybatis"></property>
+        <property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/zdy_mybatis"></property>
         <property name="username" value="root"></property>
         <property name="password" value="togic4you"></property>
     </dataSource>
-
-<!--    <environments default="dev">-->
-<!--        <environment id="dev">-->
-<!--            <transactionManager type="JDBC"></transactionManager>-->
-<!--            <dataSource type="POOLED">-->
-<!--                <property name="driver" value="com.mysql.jdbc.Driver"/>-->
-<!--                <property name="url" value="jdbc:mysql:///zdy_mybatis"/>-->
-<!--                <property name="username" value="root"/>-->
-<!--                <property name="password" value="togic4you"/>-->
-<!--            </dataSource>-->
-<!--        </environment>-->
-<!--    </environments>-->
 
     <mapper resource="userMapper.xml"></mapper>
 
